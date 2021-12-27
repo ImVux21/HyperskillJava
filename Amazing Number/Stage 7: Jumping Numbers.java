@@ -198,158 +198,41 @@ public class Main {
 
     // check input and find given properties
     public static boolean findNameProperty(long number, String name) {
-        boolean check1 = false;
-        boolean check2 = false;
-        boolean check3 = false;
-        boolean check4 = false;
-        boolean check5 = false;
-        String firstName = "";
-        String secondName = "";
-        String thirdName = "";
-        String fourthName = "";
-        String fifthName = "";
-
-        boolean checkAll = false;
+        boolean checkAll = true;
         String[] listName = name.split(" ");
-        if (listName.length == 1) {
-            firstName = listName[0];
-        } else if (listName.length == 2) {
-            firstName = listName[0];
-            secondName = listName[1];
-        } else if (listName.length == 3) {
-            firstName = listName[0];
-            secondName = listName[1];
-            thirdName = listName[2];
-        } else if (listName.length == 4) {
-            firstName = listName[0];
-            secondName = listName[1];
-            thirdName = listName[2];
-            fourthName = listName[3];
-        } else if (listName.length == 5) {
-            firstName = listName[0];
-            secondName = listName[1];
-            thirdName = listName[2];
-            fourthName = listName[3];
-            fifthName = listName[4];
+        boolean[] checkBoolean = new boolean[listName.length];
+
+        for (int i = 0; i < listName.length; i++) {
+            checkBoolean[i] = false;
         }
 
-        if (firstName.equals("even") && isEvenOdd(number)) {
-            check1 = true;
-        } else if (firstName.equals("odd") && !isEvenOdd(number)) {
-            check1 = true;
-        } else if (firstName.equals("buzz") && isBuzz(number)) {
-            check1 = true;
-        } else if (firstName.equals("duck") && isDuck(number)) {
-            check1 = true;
-        } else if (firstName.equals("palindromic") && isPalindromic(number)) {
-            check1 = true;
-        } else if (firstName.equals("gapful") && isGapful(number)) {
-            check1 = true;
-        } else if (firstName.equals("square") && isSquare(number)) {
-            check1 = true;
-        } else if (firstName.equals("spy") && isSpy(number)) {
-            check1 = true;
-        } else if (firstName.equals("sunny") && isSunny(number)) {
-            check1 = true;
-        } else if (firstName.equals("jumping") && isJumping(number)) {
-            check1 = true;
+        for (int i = 0; i < checkBoolean.length; i++) {
+            if (listName[i].equals("even") && isEvenOdd(number)) {
+                checkBoolean[i] = true;
+            } else if (listName[i].equals("odd") && !isEvenOdd(number)) {
+                checkBoolean[i] = true;
+            } else if (listName[i].equals("buzz") && isBuzz(number)) {
+                checkBoolean[i] = true;
+            } else if (listName[i].equals("duck") && isDuck(number)) {
+                checkBoolean[i] = true;
+            } else if (listName[i].equals("palindromic") && isPalindromic(number)) {
+                checkBoolean[i] = true;
+            } else if (listName[i].equals("gapful") && isGapful(number)) {
+                checkBoolean[i] = true;
+            } else if (listName[i].equals("square") && isSquare(number)) {
+                checkBoolean[i] = true;
+            } else if (listName[i].equals("spy") && isSpy(number)) {
+                checkBoolean[i] = true;
+            } else if (listName[i].equals("sunny") && isSunny(number)) {
+                checkBoolean[i] = true;
+            } else if (listName[i].equals("jumping") && isJumping(number)) {
+                checkBoolean[i] = true;
+            }
         }
-        if (secondName.equals("even") && isEvenOdd(number)) {
-            check2 = true;
-        } else if (secondName.equals("odd") && !isEvenOdd(number)) {
-            check2 = true;
-        } else if (secondName.equals("buzz") && isBuzz(number)) {
-            check2 = true;
-        } else if (secondName.equals("duck") && isDuck(number)) {
-            check2 = true;
-        } else if (secondName.equals("palindromic") && isPalindromic(number)) {
-            check2 = true;
-        } else if (secondName.equals("gapful") && isGapful(number)) {
-            check2 = true;
-        } else if (secondName.equals("square") && isSquare(number)) {
-            check2 = true;
-        } else if (secondName.equals("spy") && isSpy(number)) {
-            check2 = true;
-        } else if (secondName.equals("sunny") && isSunny(number)) {
-            check2 = true;
-        } else if (secondName.equals("jumping") && isJumping(number)) {
-            check2 = true;
-        }
-
-        if (thirdName.equals("even") && isEvenOdd(number)) {
-            check3 = true;
-        } else if (thirdName.equals("odd") && !isEvenOdd(number)) {
-            check3 = true;
-        } else if (thirdName.equals("buzz") && isBuzz(number)) {
-            check3 = true;
-        } else if (thirdName.equals("duck") && isDuck(number)) {
-            check3 = true;
-        } else if (thirdName.equals("palindromic") && isPalindromic(number)) {
-            check3 = true;
-        } else if (thirdName.equals("gapful") && isGapful(number)) {
-            check3 = true;
-        } else if (thirdName.equals("square") && isSquare(number)) {
-            check3 = true;
-        } else if (thirdName.equals("spy") && isSpy(number)) {
-            check3 = true;
-        } else if (thirdName.equals("sunny") && isSunny(number)) {
-            check3 = true;
-        } else if (thirdName.equals("jumping") && isJumping(number)) {
-            check3 = true;
-        }
-
-        if (fourthName.equals("even") && isEvenOdd(number)) {
-            check4 = true;
-        } else if (fourthName.equals("odd") && !isEvenOdd(number)) {
-            check4 = true;
-        } else if (fourthName.equals("buzz") && isBuzz(number)) {
-            check4 = true;
-        } else if (fourthName.equals("duck") && isDuck(number)) {
-            check4 = true;
-        } else if (fourthName.equals("palindromic") && isPalindromic(number)) {
-            check4 = true;
-        } else if (fourthName.equals("gapful") && isGapful(number)) {
-            check4 = true;
-        } else if (fourthName.equals("square") && isSquare(number)) {
-            check4 = true;
-        } else if (fourthName.equals("spy") && isSpy(number)) {
-            check4 = true;
-        } else if (fourthName.equals("sunny") && isSunny(number)) {
-            check4 = true;
-        } else if (fourthName.equals("jumping") && isJumping(number)) {
-            check4 = true;
-        }
-        if (fifthName.equals("even") && isEvenOdd(number)) {
-            check5 = true;
-        } else if (fifthName.equals("odd") && !isEvenOdd(number)) {
-            check5 = true;
-        } else if (fifthName.equals("buzz") && isBuzz(number)) {
-            check5 = true;
-        } else if (fifthName.equals("duck") && isDuck(number)) {
-            check5 = true;
-        } else if (fifthName.equals("palindromic") && isPalindromic(number)) {
-            check5 = true;
-        } else if (fifthName.equals("gapful") && isGapful(number)) {
-            check5 = true;
-        } else if (fifthName.equals("square") && isSquare(number)) {
-            check5 = true;
-        } else if (fifthName.equals("spy") && isSpy(number)) {
-            check5 = true;
-        } else if (fifthName.equals("sunny") && isSunny(number)) {
-            check5 = true;
-        } else if (fifthName.equals("jumping") && isJumping(number)) {
-            check5 = true;
-        }
-        if (check1 && listName.length == 1) {
-            checkAll = true;
-        } else if (check1 && check2 && listName.length == 2) {
-            checkAll = true;
-        } else if (check1 && check2 && check3 && listName.length == 3) {
-            checkAll = true;
-        } else if (check1 && check2 && check3 && check4 && listName.length == 4) {
-            checkAll = true;
-        } else if (check1 && check2 && check3 && check4 && check5 && listName.length == 5) {
-            checkAll = true;
+        for (boolean b : checkBoolean) {
+            if (b == false) {
+                checkAll = false;
+            }
         }
         return checkAll;
     }
@@ -391,7 +274,6 @@ public class Main {
         return false;
     }
 
-    // find and return wrong names of properties
     public static List<String> checkName(String[] name) {
         List<String> nameOfProperty = new ArrayList<String>();
         for (String s : name) {
@@ -427,6 +309,7 @@ public class Main {
                     name += " ";
                     newListName[i - 2] = newNumberString[i];
                 }
+                // remove space at last position
                 name = name.trim().toLowerCase(Locale.ROOT);
 
                 twoInputOrOne = true;
@@ -440,14 +323,18 @@ public class Main {
                         showProperties((firstNum + i), twoInputOrOne);
                     }
                 }
+                // have a wrong name
                 else if (checkName(newListName).size() == 1) {
                     System.out.println("The property [" + checkName(newListName).get(0).toUpperCase() + "] is wrong.\n" +
                             "Available properties: [EVEN, ODD, BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, SQUARE, SUNNY, JUMPING]");
-                } else if (checkName(newListName).size() > 1) {
+                }
+                // having morw than a wrong name
+                else if (checkName(newListName).size() > 1) {
                     String wrongNames = "";
                     for (int i = 0; i < checkName(newListName).size(); i++) {
                         wrongNames += checkName(newListName).get(i) + ", ";
                     }
+                    // remove ", " at last position
                     wrongNames = wrongNames.substring(0, wrongNames.length() - 2);
                     System.out.println("The properties [" + wrongNames.toUpperCase() + "] are wrong.\n" +
                             "Available properties: [EVEN, ODD, BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, SQUARE, SUNNY, JUMPING]");
