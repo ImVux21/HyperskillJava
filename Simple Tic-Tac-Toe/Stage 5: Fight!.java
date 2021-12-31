@@ -63,7 +63,7 @@ public class Main {
                     grid[firstIndex - 1][secondIndex - 1] = 'X';
                     showCell(grid);
                     count++;
-                }  
+                }
                 // add O
                 else if ((grid[firstIndex - 1][secondIndex - 1] == ' ' || grid[firstIndex - 1][secondIndex - 1] == '_') && count % 2 != 0) {
                     grid[firstIndex - 1][secondIndex - 1] = 'O';
@@ -71,10 +71,8 @@ public class Main {
                     count++;
                 } else if (grid[firstIndex - 1][secondIndex - 1] != ' ' || grid[firstIndex - 1][secondIndex - 1] != '_') {
                     System.out.println("This cell is occupied! Choose another one!");
-                } else if (firstIndex > 3 || secondIndex > 3) {
-                    System.out.println("Coordinates should be from 1 to 3!");
                 }
-                
+
                 // check who wins
                 if (checkWinners(grid, 'X')) {
                     System.out.println("X wins");
@@ -87,7 +85,7 @@ public class Main {
                     isChecked = false;
                 }
             } catch (Exception e) {
-                System.out.println("You should enter numbers!");
+                System.out.println("You should enter numbers! or Coordinates should be from 1 to 3!");
             }
         }
     }
