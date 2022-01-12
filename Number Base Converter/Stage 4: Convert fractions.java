@@ -14,15 +14,13 @@ public class Main {
         int sourceBase = Integer.parseInt(listBase[0]);
         int targetBase = Integer.parseInt(listBase[1]);
         BigDecimal value = convertToDecimal(valueString, sourceBase);
-        BigDecimal subValue = convertToDecimal(valueString, sourceBase);
         String result = "";
         String resultFraction = "";
         // fractional parts of BigDecimal
         BigDecimal fractionalPart = value.remainder(BigDecimal.ONE);
-        BigDecimal b = null;
         // integer parts of BigDecimal
         value = new BigDecimal(value.toBigInteger());
-        
+
         // convert fractional part of decimal to the other base
         do {
             BigInteger intFractionalPart = fractionalPart.toBigInteger();
@@ -53,10 +51,9 @@ public class Main {
     public static BigDecimal convertToDecimal(String value, int base) {
         String digits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         value = value.toUpperCase();
-        String valueString = "";
         BigDecimal newValue = BigDecimal.ZERO;
         BigDecimal newFraction = BigDecimal.ZERO;
-        
+
         // convert fractional parts of the other base to decimal
         if (value.contains(".")) {
             String[] parts = value.split("\\.");
@@ -68,12 +65,7 @@ public class Main {
                 newFraction = newFraction.add(d.multiply(BigDecimal.valueOf(Math.pow(base, - i))));
             }
         }
-        // reverse number
-        if (base < 10) {
-            for (int i = value.length() - 1; i >= 0; i--) {
-                valueString += value.charAt(i);
-            }
-        }
+
         // convert integer parts of the other base to decimal
         for (int i = 0; i < value.length(); i++) {
             char c = value.charAt(i);
