@@ -44,7 +44,7 @@ public class Main {
         // write your code here
         boolean isChecked= true;
         Scanner input = new Scanner(System.in);
-        char[][] grid = new char[3][3];
+        char[][] grid;
         grid = createGrid();
         showCell(grid);
         int count = 0;
@@ -57,9 +57,12 @@ public class Main {
                 String[] userInput = coordinates.split(" ");
                 int firstIndex = Integer.parseInt(userInput[0]);
                 int secondIndex = Integer.parseInt(userInput[1]);
-                // X first, then O
+                // X first, then O's turn
                 // add X
-                if ((grid[firstIndex - 1][secondIndex - 1] == ' ' || grid[firstIndex - 1][secondIndex - 1] == '_') && count % 2 == 0) {
+                if ((firstIndex > 3 || secondIndex > 3)) {
+                    System.out.println("Coordinates should be from 1 to 3!");
+                }
+                else if ((grid[firstIndex - 1][secondIndex - 1] == ' ' || grid[firstIndex - 1][secondIndex - 1] == '_') && count % 2 == 0) {
                     grid[firstIndex - 1][secondIndex - 1] = 'X';
                     showCell(grid);
                     count++;
@@ -85,7 +88,7 @@ public class Main {
                     isChecked = false;
                 }
             } catch (Exception e) {
-                System.out.println("You should enter numbers! or Coordinates should be from 1 to 3!");
+                System.out.println("You should enter numbers!");
             }
         }
     }
