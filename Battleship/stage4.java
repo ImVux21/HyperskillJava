@@ -5,7 +5,7 @@ import java.util.Scanner;
 public class Main {
     static String[][] fields = createFields();
     static String[][] fogsFields = createFields();
-    
+
     enum Ships {
         CARRIER("Aircraft Carrier", 5),
         BATTLESHIP("Battleship", 4),
@@ -52,7 +52,7 @@ public class Main {
         return coordinates[0] != coordinates[2] && coordinates[1] != coordinates[3];
     }
 
-    public static boolean checkClose(int[] coordinates) {
+    public static boolean checkCloseness(int[] coordinates) {
         boolean isSouthSide = coordinates[0] > 0; // eliminate out of bound along with horizontal
         boolean isNorthSide = coordinates[2] < 9; // eliminate out of bound along with horizontal
         boolean isWestSide = coordinates[1] > 0; // eliminate out of bound along with vertical
@@ -142,7 +142,7 @@ public class Main {
         String[] alphabet = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
         String[] splitCoordinates;
         int[] convertCoordinates;
-        if (coordinates.contains(" ")) {
+        if (coordinates.contains(" ")) { // coordinates of adding turn
             splitCoordinates = coordinates.split(" ");
             String[] firstCoordinates = splitCoordinates[0].split("");
             String[] secondCoordinates = splitCoordinates[1].split("");
@@ -170,7 +170,9 @@ public class Main {
                 convertCoordinates[1] = convertCoordinates[3];
                 convertCoordinates[3] = temp;
             }
-        } else {
+        }
+        // coordinates of hitting turn
+        else {
             convertCoordinates = new int[2];
             splitCoordinates = coordinates.split("");
             for (int i = 0; i < 26; i++) {
@@ -225,12 +227,12 @@ public class Main {
                     System.out.println("Error! Wrong length of the " + ships[count].name + "! Try again:");
                 } else if (checkInvalidCoordinates(convertCoordinate(coordinates))) {
                     System.out.println("Error! Wrong ship location! Try again:");
-                } else if (checkClose(convertCoordinate(coordinates))) {
+                } else if (checkCloseness(convertCoordinate(coordinates))) {
                     System.out.println("Error! You placed it too close to another one. Try again:");
                 }
                 else {
-                    ships[count].position = createFields();
-                    createShips(convertCoordinate(coordinates), ships[count].position);
+                    ships[count].position = createFields(); // create ship fields one by one
+                    createShips(convertCoordinate(coordinates), ships[count].position); // create ships on the fields
                     count++;
                     isChecked = false;
                 }
@@ -239,7 +241,6 @@ public class Main {
     }
 
     public static Ships checkSpecifiedShip(int[] coordinates) {
-      // compare between specified ship of fields and mainly fields to get ship
         int count = 0;
         for (int i = 0; i < 5; i++) {
             if (ships[i].position[coordinates[0]][coordinates[1]].equals(fields[coordinates[0]][coordinates[1]]) && fields[coordinates[0]][coordinates[1]].equals("O")) {
@@ -258,10 +259,14 @@ public class Main {
             subShip.position[coordinates[0]][coordinates[1]] = "~"; // hit at the specified position of ship field
 
             showFields(fogsFields);
-            if (checkSankAShip(subShip.position)) {
-                System.out.println("You sank a ship! Specify a new target:");
+            if (checkWinner(fields)) {
+                if (checkSankAShip(subShip.position)) {
+                    System.out.println("You sank a ship! Specify a new target:");
+                } else {
+                    System.out.println("You hit a ship! Try again:");
+                }
             } else {
-                System.out.println("You hit a ship! Try again:");
+                System.out.println("You sank the last ship. You won. Congratulations!");
             }
         } else {
             fogsFields[coordinates[0]][coordinates[1]] = "M";
@@ -279,8 +284,8 @@ public class Main {
         do {
             String coordinates = scanner.nextLine();
             // checks out of fields
-            boolean checkFirstOutOfBound = convertCoordinate(coordinates)[0] >= 0 && convertCoordinate(coordinates)[0] < 10;
-            boolean checkSecondOutOfBound = convertCoordinate(coordinates)[1] >= 0 && convertCoordinate(coordinates)[1] < 10;
+            boolean checkFirstOutOfBound = convertCoordinate(coordinates)[0] >= 0 && convertCoordinate(coordinates)[0] < 10; // out of bounds are western and eastern
+            boolean checkSecondOutOfBound = convertCoordinate(coordinates)[1] >= 0 && convertCoordinate(coordinates)[1] < 10; // out of bounds are north and south
 
             if (checkFirstOutOfBound && checkSecondOutOfBound) {
                 hitShip(convertCoordinate(coordinates));
@@ -288,7 +293,6 @@ public class Main {
                 System.out.println("Error! You entered the wrong coordinates! Try again:");
             }
         } while (checkWinner(fields));
-        System.out.println("You sank the last ship. You won. Congratulations!");
     }
 
     public static void main(String[] args){
