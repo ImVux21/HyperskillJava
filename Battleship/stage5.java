@@ -1,4 +1,3 @@
-package battleship;
 
 import java.util.Scanner;
 
@@ -310,7 +309,7 @@ public class Main {
         System.out.println();
 
         player = 0;
-        while (checkWinner(player1Fields) || checkWinner(player2Fields)){
+        while (true){
             if (player % 2 == 0) {
                 player = 0;
             } else {
@@ -343,8 +342,16 @@ public class Main {
                     System.out.println("Error! You entered the wrong coordinates! Try again:");
                 }
             }
-            if (checkWinner(player1Fields) || checkWinner(player2Fields)) {
+            if (checkWinner(player1Fields) && player % 2 == 0) {
                 pressEnter();
+            } else if (checkWinner(player2Fields) && player % 2 != 0) {
+                pressEnter();
+            }
+            // Stop The Game
+            if (!checkWinner(player1Fields)) {
+                break;
+            } else if (!checkWinner(player2Fields)) {
+                break;
             }
         }
 
