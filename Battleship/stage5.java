@@ -117,14 +117,16 @@ public class Main {
     }
 
     public static boolean checkWinner(String[][] fields) {
+        boolean isChecked = false;
         for (int i = 0; i < fields.length; i++) {
             for (int j = 0; j < fields.length; j++) {
                 if (fields[i][j].equals("O")) {
-                    return true;
+                    isChecked = true;
+                    break;
                 }
             }
         }
-        return false;
+        return isChecked;
     }
 
     public static boolean checkSankAShip(String[][] position) {
