@@ -1,79 +1,161 @@
 package client;
 
-import java.net.*;
-import java.io.*;
+import action.Action;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.Socket;
 import java.util.Scanner;
 
+import static action.Action.EXIT;
+
 public class Main {
+
     private static final String ADDRESS = "127.0.0.1";
-    private static final int PORT = 23456;
-    private static final String PUT = "PUT";
-    private static final String DELETE = "DELETE";
-    private static final String GET = "GET";
-    private static final String[] code = {"200", "403", "404"};
+    private static final int port = 23456;
 
-    public static void main(String[] args) throws IOException {
-        boolean stopProgram = true;
-        Socket socket = new Socket(InetAddress.getByName(ADDRESS), PORT);
+    public static void main(String[] args) {
+        boolean isStopped = true;
 
-        DataInputStream inputStream = new DataInputStream(socket.getInputStream());
-        DataOutputStream outputStream = new DataOutputStream(socket.getOutputStream());
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        try (
+                Socket socket = new Socket(InetAddress.getByName(ADDRESS), port);
+                DataInputStream input = new DataInputStream(socket.getInputStream());
+                DataOutputStream output = new DataOutputStream(socket.getOutputStream());
 
-        System.out.print("Enter action (1 - get a file, 2 - create a file, 3 - delete a file): ");
-        String promt = reader.readLine();
+        )  {
+            while (isStopped) {
 
-        if (promt.equals("exit")) {
-            stopProgram = false;
-            socket.close();
-        }
+                Action action = askUserAction();
 
-        if (stopProgram) {
-            System.out.print("Enter filename: ");
-            String nameFile = reader.readLine();
+                // create the client request
+                String clientRequest = null;
+                switch (action) {
+                    case GET:
+                        clientRequest = createGetRequest();
+                        break;
+                    case PUT:
+                        clientRequest = createCreateRequest();
+                        break;
+                    case DELETE:
+                        clientRequest = createDeleteRequest();
+                        break;
+                    case EXIT:
+                        clientRequest = createExitRequest();
+                        isStopped = false;
+                        break;
+                }
 
-            String fileContent = null;
-            if (promt.equals("2")) {
-                System.out.print("Enter file content: ");
-                fileContent = reader.readLine();
-            }
+                // send the request string
+                sendClientRequest(clientRequest, output);
 
-            String request = null;
-            if (promt.equals("2")) {
-                request = PUT + nameFile + fileContent;
-            } else if (promt.equals("1")) {
-                request = GET + nameFile;
-            } else if (promt.equals("3")) {
-                request = DELETE + nameFile;
-            }
+                // for the request GET, CREATE, DELETE, the server will send the response containing status code,
+                if (action != EXIT) {
+                    // receive the server response
 
-            outputStream.writeUTF(request); // send data to server
-            System.out.println("The request was sent.");
+                    String serverResponse = receiveServerResponse(input);
 
-            String receivedCode = inputStream.readUTF();
-
-            if (receivedCode.equals(code[0])) {
-                if (promt.equals("2")) {
-                    System.out.println("The response says that file was created!");
-                } else if (promt.equals("1")) {
-                    File f = new File("D:\\FIT_2022\\DSA_2022\\File Server\\File Server\\task\\src\\server\\data\\folder\\" + nameFile);
-                    Scanner scanner = new Scanner(f);
-                    System.out.println("The content of the file is: " + scanner.nextLine());
-                } else if (promt.equals("3")) {
-                    System.out.println("The response says that the file was successfully deleted!");
+                    // parse and display the response based on the user action
+                    parseAndDisplayServerResponse(serverResponse, action);
                 }
             }
 
-            if (receivedCode.equals(code[1])) {
-                System.out.println("The response says that creating the file was forbidden!");
-            }
+        } catch (Exception e) {
+            System.out.println("Error in client");
+            e.printStackTrace();
+        }
+    }
 
-            if (receivedCode.equals(code[2])) {
-                System.out.println("The response says that the file was not found!");
-            }
+    private static Action askUserAction() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter action (1 - get a file, 2 - create a file, 3 - delete a file): ");
+        String userEnter = scanner.nextLine();
 
-            outputStream.close();
-            socket.close();
+        switch (userEnter) {
+            case "1": return Action.GET;
+            case "2": return Action.PUT;
+            case "3": return Action.DELETE;
+            case "exit": return Action.EXIT;
+        }
+
+        return null;
+    }
+
+    private static String createGetRequest() {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter filename: ");
+        String filename = scanner.nextLine();
+
+        return String.format("%s %s", Action.GET, filename);
+    }
+
+    private static String createCreateRequest() {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter filename: ");
+        String filename = scanner.nextLine();
+        System.out.print("Enter file content: ");
+        String fileContent = scanner.nextLine();
+
+        return String.format("%s %s %s", Action.PUT, filename, fileContent);
+    }
+
+    private static String createDeleteRequest() {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter filename: ");
+        String filename = scanner.nextLine();
+
+        return String.format("%s %s", Action.DELETE, filename);
+    }
+
+    private static String createExitRequest() {
+        return "exit";
+    }
+
+    private static void sendClientRequest(String clientRequest, DataOutputStream output) {
+        try {
+            output.writeUTF(clientRequest);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println("The request was sent.");
+    }
+
+    private static String receiveServerResponse(DataInputStream input) {
+        String response = null;
+        try {
+            response = input.readUTF();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return response;
+    }
+
+    private static void parseAndDisplayServerResponse(String serverResponse, Action action) {
+        String[] parts = serverResponse.split("\\s+");
+        if (parts[0].equals("200")) {
+            switch (action) {
+                case GET:
+                    String content = serverResponse.substring(3, serverResponse.length() - 1).trim();
+                    System.out.printf("The content of the file is: %s\n", content);
+                    break;
+
+                case PUT:
+                    System.out.println("The response says that the file was created!");
+                    break;
+
+                case DELETE:
+                    System.out.println("The response says that the file was successfully deleted!");
+                    break;
+
+            }
+        } else if (parts[0].equals("404")) {
+            System.out.println("The response says that the file was not found!");
+        } else if (parts[0].equals("403")) {
+            System.out.println("The response says that creating the file was forbidden!");
         }
     }
 }
