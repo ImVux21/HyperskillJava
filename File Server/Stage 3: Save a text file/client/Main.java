@@ -5,7 +5,6 @@ import action.Action;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Scanner;
 
@@ -14,55 +13,48 @@ import static action.Action.EXIT;
 public class Main {
 
     private static final String ADDRESS = "127.0.0.1";
-    private static final int port = 23456;
+    private static final int PORT = 23456;
 
     public static void main(String[] args) {
-        boolean isStopped = true;
 
         try (
-                Socket socket = new Socket(InetAddress.getByName(ADDRESS), port);
+                Socket socket = new Socket(ADDRESS, PORT);
                 DataInputStream input = new DataInputStream(socket.getInputStream());
-                DataOutputStream output = new DataOutputStream(socket.getOutputStream());
+                DataOutputStream output = new DataOutputStream(socket.getOutputStream())
 
         )  {
-            while (isStopped) {
+            Action action = askUserAction();
 
-                Action action = askUserAction();
-
-                // create the client request
-                String clientRequest = null;
-                switch (action) {
-                    case GET:
-                        clientRequest = createGetRequest();
-                        break;
-                    case PUT:
-                        clientRequest = createCreateRequest();
-                        break;
-                    case DELETE:
-                        clientRequest = createDeleteRequest();
-                        break;
-                    case EXIT:
-                        clientRequest = createExitRequest();
-                        isStopped = false;
-                        break;
-                }
-
-                // send the request string
-                sendClientRequest(clientRequest, output);
-
-                // for the request GET, CREATE, DELETE, the server will send the response containing status code,
-                if (action != EXIT) {
-                    // receive the server response
-
-                    String serverResponse = receiveServerResponse(input);
-
-                    // parse and display the response based on the user action
-                    parseAndDisplayServerResponse(serverResponse, action);
-                }
+            // create the client request
+            String clientRequest = null;
+            switch (action) {
+                case GET:
+                    clientRequest = createGetRequest();
+                    break;
+                case PUT:
+                    clientRequest = createCreateRequest();
+                    break;
+                case DELETE:
+                    clientRequest = createDeleteRequest();
+                    break;
+                case EXIT:
+                    clientRequest = createExitRequest();
+                    break;
             }
 
+            // send the request string
+            sendClientRequest(clientRequest, output);
+
+            // for the request GET, CREATE, DELETE, the server will send the response containing status code,
+            if (action != EXIT) {
+                // receive the server response
+
+                String serverResponse = receiveServerResponse(input);
+
+                // parse and display the response based on the user action
+                parseAndDisplayServerResponse(serverResponse, action);
+            }
         } catch (Exception e) {
-            System.out.println("Error in client");
             e.printStackTrace();
         }
     }
@@ -139,7 +131,7 @@ public class Main {
         if (parts[0].equals("200")) {
             switch (action) {
                 case GET:
-                    String content = serverResponse.substring(3, serverResponse.length() - 1).trim();
+                    String content = serverResponse.substring(3).trim();
                     System.out.printf("The content of the file is: %s\n", content);
                     break;
 
