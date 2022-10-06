@@ -13,13 +13,14 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 
 public class Session implements Runnable {
-    // save new file, delete file -> update the map
+
     private static final String DATA_STORED_DIR = "D:\\FIT_2022\\DSA_2022\\File Server\\File Server\\task\\src\\server\\data\\";
+    private static final String DATA_SAVED = "D:\\FIT_2022\\DSA_2022\\File Server\\File Server\\task\\src\\server\\map.txt";
+    private static final String DATA_TEMP = "D:\\FIT_2022\\DSA_2022\\File Server\\File Server\\task\\src\\server\\temp.txt";
     private static int id = 1;
     private static HashMap<Integer, String> mapFiles = new LinkedHashMap<>();
-    private ExecutorService executor;
-
     private Socket socket;
+    private ExecutorService executor;
     public Session(Socket socket, ExecutorService executor) {
         this.socket = socket;
         this.executor = executor;
@@ -51,16 +52,16 @@ public class Session implements Runnable {
                 case GET -> {
                     String fileName = getFileName(parts[1], parts[2]);
                     serverResponse = handleGetRequest(fileName);
-                    sendServerGetResponse(String.join(" ", serverResponse), fileName, output);
+                    sendServerGetResponse(serverResponse, fileName, output);
                 }
                 case PUT -> {
                     serverResponse = handlePutRequest(parts[1], fileNameToSave, input);
-                    sendServerResponse(String.join(" ", serverResponse), output);
+                    sendServerResponse(serverResponse, output);
                 }
 
                 case DELETE -> {
                     serverResponse = handleDeleteRequest(parts[1], parts[2]);
-                    sendServerResponse(String.join(" ", serverResponse), output);
+                    sendServerResponse(serverResponse, output);
                 }
             }
 
@@ -144,13 +145,11 @@ public class Session implements Runnable {
     }
 
     private static void loadDataToFileServer(String fileNameToSave) {
-        BufferedWriter bw;
-        try {
-            bw = new BufferedWriter(new FileWriter("D:\\FIT_2022\\DSA_2022\\File Server\\File Server\\task\\src\\server\\map.txt", true));
+        try (
+            BufferedWriter bw = new BufferedWriter(new FileWriter(DATA_SAVED, true))
+        ) {
             String element = id + ": " + fileNameToSave + "\n";
             bw.append(element);
-            bw.close();
-
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -183,10 +182,10 @@ public class Session implements Runnable {
 
     private static void updateMapFile(int id) throws IOException {
         copyMapFile();
-        clearMapFile("D:\\FIT_2022\\DSA_2022\\File Server\\File Server\\task\\src\\server\\map.txt");
+        clearMapFile(DATA_SAVED);
         try (
-            Scanner sc = new Scanner(Paths.get("D:\\FIT_2022\\DSA_2022\\File Server\\File Server\\task\\src\\server\\temp.txt"));
-            BufferedWriter bw = new BufferedWriter(new FileWriter("D:\\FIT_2022\\DSA_2022\\File Server\\File Server\\task\\src\\server\\map.txt"))
+            Scanner sc = new Scanner(Paths.get(DATA_TEMP));
+            BufferedWriter bw = new BufferedWriter(new FileWriter(DATA_SAVED))
         ) {
 
             while (sc.hasNext()) {
@@ -194,10 +193,9 @@ public class Session implements Runnable {
 
                 if (!line.isEmpty()) {
                     String[] parts = line.split(":");
-                    if (parts[0].equals(String.valueOf(id))) {
-                        line = "";
+                    if (!parts[0].equals(String.valueOf(id))) {
+                        bw.write(line + "\n");
                     }
-                    bw.write(line + "\n");
                 }
             }
         } catch (IOException e) {
@@ -207,16 +205,18 @@ public class Session implements Runnable {
     }
 
     private static void copyMapFile() {
-        clearMapFile("D:\\FIT_2022\\DSA_2022\\File Server\\File Server\\task\\src\\server\\temp.txt");
+        clearMapFile(DATA_TEMP);
 
         try (
-            InputStream is = new FileInputStream("D:\\FIT_2022\\DSA_2022\\File Server\\File Server\\task\\src\\server\\map.txt");
-            OutputStream os = new FileOutputStream("D:\\FIT_2022\\DSA_2022\\File Server\\File Server\\task\\src\\server\\temp.txt");
+            Scanner sc = new Scanner(Paths.get(DATA_SAVED));
+            FileWriter fw = new FileWriter(DATA_TEMP, true)
             ) {
-            byte[] buffer = new byte[1024];
-            int length;
-            while ((length = is.read(buffer)) > 0) {
-                os.write(buffer, 0, length);
+            while (sc.hasNext()) {
+                String element = sc.nextLine();
+
+                if (!element.equals("")) {
+                    fw.append(element).append("\n");
+                }
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
